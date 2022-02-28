@@ -22,7 +22,7 @@ while ok:
         cve_cpt = cve_cpt + 1
         columns = rows.pop(0).find_elements(By.TAG_NAME, 'td')
         actual_cve_number = int(columns.pop(0).text)
-        if actual_cve_number >= number_cve:
+        if actual_cve_number > number_cve:
             ok = False
             break
 
