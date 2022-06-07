@@ -1,0 +1,21 @@
+Start on boot
+
+//type this command
+sudo systemctl --force --full edit hack.service
+
+//copy this inside, dont forget to change the path
+[Unit]
+After=network.target
+
+[Service]
+ExecStart=PATH-TO-YOUR-SCRIPT.py
+
+[Install]
+WantedBy=multi-user.target
+
+//stop editing
+//type this command
+sudo systemctl daemon-reload
+
+//type this command
+sudo systemctl enable hack.service
