@@ -139,6 +139,32 @@ def wifi_connect(cell,ssid, password=None):
         return cell
     return False
 
+#Se connecter à un réseau connu
+def wifi_known_connect(iprouter, ssid, password=None):
+    
+    #if
+    
+    f = open("/etc/wpa_supplicant/wpa_supplicant.conf")
+    f.write("country=FR")
+    f.write("ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev")
+    f.write("update_config=1")
+    f.write("network={")
+    f.write("    ssid='"+ssid+"'")
+    f.write("    scan_ssid=1")
+    f.write("    psk='"+password+"'")
+    f.write("    key_mgmt=WPA-PSK")
+    f.write("}")
+    f.close()
+    
+    f = open("/etc/dhcpcd.conf", "a")
+    f.write("interface wlan0")
+    f.write("static ip_address=+iprouter/24") #Déterminer IP (À FAIRE)
+    f.write("static routers="+iprouter)
+    f.write("static domain_name_servers=8.8.8.8")
+    f.close()
+    
+    os.system("sudo reboot")
+
 
 #Programme principal
 def prog():
