@@ -16,13 +16,13 @@ import wifi
 
 
 #Variable modifiable
-NMAP_OPT = ['-n -sP','-sn -PS80,21,53','-sn -PA21,22,80'] #-n pas de résolution DNS / -sP just des ping ; TCP SYN ; TCP ACK #https://hub.packtpub.com/discovering-network-hosts-with-tcp-syn-and-tcp-ack-ping-scans-in-nmaptutorial/
+NMAP_OPT = ['-n -sP','-sn -PS80,21,53','-sn -PA21,22,80'] #-n pas de résolution DNS / -sP juste des ping ; TCP SYN ; TCP ACK #https://hub.packtpub.com/discovering-network-hosts-with-tcp-syn-and-tcp-ack-ping-scans-in-nmaptutorial/
 INTERFACE_WIFI = "wlan0"
 WIFI_NAME = None #"SFR_3508"
 WIFI_PASSWORD = None 
 CHANGE_MAC = False
 
-#Génère une address MAC random   
+#Génère une adresse MAC aléatoire   
 def get_random_mac_address():
     uppercased_hexdigits = ''.join(set(string.hexdigits.upper()))
     mac = ""
@@ -35,23 +35,23 @@ def get_random_mac_address():
         mac += ":"
     return mac.strip(":")
 
-#Récupère l'address MAC actuelle
+#Récupère l'adresse MAC actuelle
 def get_current_mac_address():
     output = subprocess.check_output(f"ifconfig {current_interface}", shell=True).decode()
     return re.search("ether (.+) ", output).group().split()[1].strip()
 
-#Change l'address MAC
+#Change l'adresse MAC
 def change_mac_address():
     new_mac = get_random_mac_address()
     subprocess.check_output(f"ifconfig {current_interface} down", shell=True)
     subprocess.check_output(f"ifconfig {current_interface} hw ether {new_mac}", shell=True)
     subprocess.check_output(f"ifconfig {current_interface} up", shell=True)
 
-#Écrie les logs dans un fichier / le rapport etc   
+#Écrit les logs dans un fichier / un rapport   
 def write_log(text):
     print(text)
 
-#Récupère la liste des machine up sur le réseaux
+#Récupère la liste des machines opérationnelles sur le réseau
 def get_all_hosts(host,host_list):
     new_host_list = []
     option_dict = {key: [] for key in NMAP_OPT}
@@ -76,16 +76,16 @@ def get_all_hosts(host,host_list):
 
     return new_host_list,host_list
 
-#Scan les cve
+#Scanne les CVE
 def scan_cve():
     host_list = []
     for level in range(0,2):
         host= ipaddress.IPv4Address(re.findall('(^([0-9]*.){'+str(3-level)+'})',local_ip)[0][0][:-1]+('.0'*(level+1)))
         new_host_list,host_list = get_all_hosts(host,host_list)
         write_log("List des hosts au level "+str(level)+" : "+str(new_host_list))
-        #attaque ici
+        #Attaque ici
        
-#Scan les wifi disponible
+#Scanne les accès Wifi disponibles
 def wifi_scanner():
     wifilist = []
     cells = wifi.Cell.all(INTERFACE_WIFI)
@@ -93,7 +93,7 @@ def wifi_scanner():
         wifilist.append(cell)
     return wifilist
 
-#Recherche un wifi
+#Recherche un accès Wifi
 def get_wifi(cells):
     for cell in cells:
         if cell.ssid == WIFI_NAME:
@@ -122,7 +122,7 @@ def Delete_wifi(ssid):
     if cell:
         cell.delete()
 
-def wifi_onnect(cell,ssid, password=None):
+def wifi_connect(cell,ssid, password=None):
     if cell is not None and ssid is not None:
         savedcell = Find_Saved_wifi(cell.ssid)
         if savedcell:
@@ -140,7 +140,7 @@ def wifi_onnect(cell,ssid, password=None):
     return False
 
 
-# Programme principale
+#Programme principal
 def prog():
 
     #Initialisation des variables
@@ -149,7 +149,7 @@ def prog():
     local_ip = socket.gethostbyname(socket.gethostname())
     local_ip = "192.168.1.0"
 
-    #Si connecter en ethernet
+    #Si connecté en ethernet
     if "eth0" in current_interface:
         write_log("l'interface réseau est en ethernet : "+current_interface)
         write_log("l'ip actuel et : "+local_ip)
@@ -157,7 +157,7 @@ def prog():
 
     #Wifi
     list_wifi = wifi_scanner()
-    cell = wifi_onnect(get_wifi(list_wifi),WIFI_NAME,WIFI_PASSWORD)
+    cell = wifi_connect(get_wifi(list_wifi),WIFI_NAME,WIFI_PASSWORD)
     if cell != False:
         scan_cve()
         list_wifi.remove(WIFI_NAME)
@@ -170,9 +170,9 @@ def prog():
 
 
 if __name__ == '__main__':
-    #Tourne en boucle en actualisant la liste des CVE si connecter
+    #Tourne en boucle en actualisant la liste des CVE si connecté
     while True:
         prog()
         if os.system("ping -c 1 google.com") == 0:
-            #actualise le json des CVE
+            #Actualise le fichier .json des CVE
 
