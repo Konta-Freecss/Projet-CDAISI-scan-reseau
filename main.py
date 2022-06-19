@@ -29,6 +29,7 @@ WIFI_PASSWORD = None
 CHANGE_MAC = False
 CVE_FILE = 'cve.json'
 WORDLIST = "rockyou.txt"
+MY_WIFI = "my4gwifi"
 
 global current_interface, level, nm, local_ip
 
@@ -444,16 +445,21 @@ def prog():
 
     for wifi in list_wifi:
         cell = brutforce_wifi(wifi)
-        if cell != False:
+        if wifi == MY_WIFI:
+            #start le server web
+            #le fichier log et dirrectement disponible sur le server web
+            subprocess.run(("systemctl start nginx").split())
+            return True
+        elif cell != False:
             scan_cve()
+    return False
 
 
 if __name__ == '__main__':
-    #start le server web
-    #le fichier log et dirrectement disponible sur le server web
-    subprocess.run(("systemctl start nginx").split())
     # Tourne en boucle en actualisant la liste des CVE si connecté
     while True:
-        prog()
+        status = prog()
+        if status:
+            break
         if os.system("ping -c 1 google.com") == 0:
             cve_json_maj()
