@@ -22,7 +22,7 @@ import argparse
 import wifi
 
 # Variable modifiable
-NMAP_OPT = ['-n -sP', '-sn -PS80,21,53','-sn -PA21,22,80']  # -n pas de résolution DNS / -sP juste des ping ; TCP SYN ; TCP ACK #https://hub.packtpub.com/discovering-network-hosts-with-tcp-syn-and-tcp-ack-ping-scans-in-nmaptutorial/
+NMAP_OPT = ['-n -sP -T2', '-sn -PS80,21,53 -T2','-sn -PA21,22,80 -T2']  # -n pas de résolution DNS / -sP juste des ping ; TCP SYN ; TCP ACK #https://hub.packtpub.com/discovering-network-hosts-with-tcp-syn-and-tcp-ack-ping-scans-in-nmaptutorial/
 INTERFACE_WIFI = "wlan0"
 WIFI_NAME = None  
 WIFI_PASSWORD = None
